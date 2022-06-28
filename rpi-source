@@ -109,7 +109,7 @@ def writef(f, str, mode='w'):
     debug("writef(%s)" % f)
     if not args.dry_run:
         with open(f, mode) as f:
-            f.write(str)
+            f.write(str.decode('utf-8'))
 
 def download(url):
     debug("download: %s" % url)
