@@ -15,7 +15,7 @@ The script uses sudo internally when self-updating and when making the links */l
 
 Dependencies
 ```text
-sudo apt install git bc bison flex libssl-dev
+sudo apt install git bc bison flex libssl-dev python2
 ```
 
 Install
