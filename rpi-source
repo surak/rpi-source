@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 #
 # Copyright (C) 2014 Noralf Tronnes
@@ -11,9 +11,9 @@ import os
 import struct
 import sys
 import argparse
-import urllib
-import urllib2
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 import gzip
 import subprocess
 import re
@@ -24,7 +24,7 @@ import errno
 # used by archive file and unpacked archive
 DISK_USAGE_MB = 900
 
-PROCESSOR_TYPES = range(0, 4)
+PROCESSOR_TYPES = list(range(0, 4))
 PROCESSOR_TYPES_NAMES = ['BCM2835', 'BCM2836', 'BCM2837', 'BCM2711']
 
 help = "https://github.com/RPi-Distro/rpi-source/blob/master/README.md"
@@ -77,11 +77,11 @@ def debug(str):
 
 def info(str):
     if not args.quiet:
-        print("\n *** %s" % str)
+        print(("\n *** %s" % str))
 
 def warn(str):
     if not args.quiet:
-        print("\n !!! %s" % str)
+        print(("\n !!! %s" % str))
 
 def fail(str):
     sys.stderr.write("ERROR:\n%s\n\nHelp: %s\n" % (str, help))
@@ -109,25 +109,25 @@ def writef(f, str, mode='w'):
 def download(url):
     debug("download: %s" % url)
     try:
-        res = urllib2.urlopen(url).read()
-    except urllib2.HTTPError, e:
+        res = urllib.request.urlopen(url).read()
+    except urllib.error.HTTPError as e:
         fail(
             "Couldn't download %s, HTTPError: %s\n\n%s"
             % (url, e.code, json.dumps(json.load(e), indent=4))
         )
-    except urllib2.URLError, e:
+    except urllib.error.URLError as e:
         fail("Couldn't download %s, URLError: %s" % (url, e.args))
     return res
 
 def download_to(url, file):
     debug("download_to: %s -> %s" % (url, file))
     if not args.dry_run:
-        urllib.urlretrieve (url, file)
+        urllib.request.urlretrieve (url, file)
 
 def update_get_head():
     if update_get_head.ref:
         return update_get_head.ref
-    repo_short = urlparse.urlparse(script_repo).path
+    repo_short = urllib.parse.urlparse(script_repo).path
     repo_api = "https://api.github.com/repos%s/git/refs/heads/master" % repo_short
     res = download(repo_api)
     try:
@@ -176,7 +176,7 @@ def do_update():
 
 def check_diskspace(dir):
     df = sh_out("df %s" % dir)
-    nums = re.findall(r'(?<=\s)\d+(?=\s+)', df)
+    nums = re.findall(rb'(?<=\s)\d+(?=\s+)', df)
     if not nums or len(nums) != 3:
         info("Warning: unable to check available diskspace")
     if (int(nums[2]) / 1024) < DISK_USAGE_MB:
@@ -238,12 +238,12 @@ def rpi_update_method(uri):
         fw_rev = f.read().strip()
     info("Firmware revision: %s" % fw_rev)
 
-    repo_short = urlparse.urlparse(uri).path
+    repo_short = urllib.parse.urlparse(uri).path
 
     repo_api = "https://api.github.com/repos%s" % repo_short
     repo_raw = "https://raw.githubusercontent.com%s" % repo_short
 
-    kernel.git_hash = download("%s/%s/git_hash" % (repo_raw, fw_rev)).strip()
+    kernel.git_hash = download("%s/%s/git_hash" % (repo_raw, fw_rev)).strip().decode('UTF-8')
     kernel.symvers = "%s/%s/Module%s.symvers" % (repo_raw, fw_rev, processor_type_suffix())
 
     if not args.default_config:
