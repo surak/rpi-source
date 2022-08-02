@@ -165,7 +165,7 @@ def update_tag():
     if not ref:
        exit(1)
     info("Set update tag: %s" % ref)
-    writef(update_tag_file, ref)
+    writef(update_tag_file, ref.encode("utf-8"))
 
 def do_update():
     # MOD: replace current script; do not assume script is located at /usr/bin/rpi-source; also keep ownership and permissions
