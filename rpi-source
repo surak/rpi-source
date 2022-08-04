@@ -272,7 +272,7 @@ def debian_method(fn):
     kernel = Kernel()
     info("Using: %s" % fn)
     with gzip.open(fn, 'rb') as f:
-        debian_changelog = f.read()
+        debian_changelog = f.read().decode('utf-8')
 
     # Find first firmware entry in log (latest entries are at the top)
     fw_rev = re.search(r'firmware as of ([0-9a-fA-F]+)', debian_changelog)
