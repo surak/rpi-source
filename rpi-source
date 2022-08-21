@@ -212,7 +212,10 @@ def check_gcc():
 
 def proc_config_gz():
     if not os.path.exists('/proc/config.gz'):
-        sh("sudo modprobe configs 2> /dev/null")
+        try:
+            sh("sudo modprobe configs 2> /dev/null")
+        except subprocess.CalledProcessError:
+            return ''
 
     if not os.path.exists('/proc/config.gz'):
         return ''
