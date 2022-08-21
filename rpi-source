@@ -288,7 +288,7 @@ def debian_method(fn):
 
     repo_raw = "https://raw.githubusercontent.com/raspberrypi/firmware"
 
-    kernel.git_hash = download("%s/%s/extra/git_hash" % (repo_raw, fw_rev)).strip()
+    kernel.git_hash = download("%s/%s/extra/git_hash" % (repo_raw, fw_rev)).strip().decode('UTF-8')
     kernel.symvers = "%s/%s/extra/Module%s.symvers" % (repo_raw, fw_rev, kernel_suffix())
 
     if not args.default_config:
