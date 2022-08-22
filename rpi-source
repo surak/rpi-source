@@ -212,7 +212,10 @@ def check_gcc():
 
 def proc_config_gz():
     if not os.path.exists('/proc/config.gz'):
-        sh("sudo modprobe configs 2> /dev/null")
+        try:
+            sh("sudo modprobe configs 2> /dev/null")
+        except subprocess.CalledProcessError:
+            return ''
 
     if not os.path.exists('/proc/config.gz'):
         return ''
@@ -285,7 +288,7 @@ def debian_method(fn):
 
     repo_raw = "https://raw.githubusercontent.com/raspberrypi/firmware"
 
-    kernel.git_hash = download("%s/%s/extra/git_hash" % (repo_raw, fw_rev)).strip()
+    kernel.git_hash = download("%s/%s/extra/git_hash" % (repo_raw, fw_rev)).strip().decode('UTF-8')
     kernel.symvers = "%s/%s/extra/Module%s.symvers" % (repo_raw, fw_rev, kernel_suffix())
 
     if not args.default_config:
@@ -424,6 +427,7 @@ sh("ln -s %s %s" % (linux_dir, linux_symlink))
 
 info("Create /lib/modules/<ver>/{build,source} symlinks")
 sh("sudo rm -rf /lib/modules/$(uname -r)/build /lib/modules/$(uname -r)/source")
+sh("sudo mkdir -p /lib/modules/$(uname -r)")
 sh("sudo ln -sf %s /lib/modules/$(uname -r)/build" % linux_symlink)
 sh("sudo ln -sf %s /lib/modules/$(uname -r)/source" % linux_symlink)
 
